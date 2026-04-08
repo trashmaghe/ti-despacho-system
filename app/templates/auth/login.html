@@ -2,24 +2,25 @@
 {% block title %}Login - {{ app_name }}{% endblock %}
 {% block content %}
 <div class="row justify-content-center align-items-center min-vh-80">
-    <div class="col-xl-10">
+    <div class="col-xl-11">
         <div class="row g-4 align-items-center">
-            <div class="col-lg-6 d-none d-lg-block">
+            <div class="col-lg-7 d-none d-lg-block">
                 <div class="hero-panel h-100">
-                    <span class="eyebrow">PAINEL INTERNO</span>
-                    <h1 class="display-5 fw-bold mb-3">Controle moderno de entrada e devolução de equipamentos.</h1>
-                    <p class="text-secondary-emphasis mb-4">Tema escuro inspirado em produtos modernos como Railway, foco em rapidez operacional e organização do setor de TI.</p>
+                    <div class="hero-grid"></div>
+                    <span class="eyebrow">PAINEL INTERNO v3</span>
+                    <h1 class="display-5 fw-bold mb-3">Recebimento, despacho e gestão de usuários em um painel mais elegante e configurável.</h1>
+                    <p class="text-secondary-emphasis mb-4">Agora com modo claro, modo escuro, 4 presets prontos e base preparada para novos temas sem mexer na estrutura da aplicação.</p>
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="feature-card">
-                                <strong>Recebimento rápido</strong>
-                                <p>Cadastro claro, protocolo automático e histórico do equipamento.</p>
+                                <strong>Deploy mais seguro</strong>
+                                <p>Fallback SQLite em <code>/tmp</code> no Railway quando faltar <code>DATABASE_URL</code>, evitando o erro do caminho inacessível.</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="feature-card">
-                                <strong>Gestão de usuários</strong>
-                                <p>Controle de operadores, administradores e alteração de senha.</p>
+                                <strong>Tema sem banco</strong>
+                                <p>Preferência visual fica no navegador com <code>localStorage</code>, sem criar mais uma dependência no deploy.</p>
                             </div>
                         </div>
                     </div>
@@ -44,6 +45,9 @@
                             </div>
                             <button class="btn btn-primary btn-lg w-100 mt-2" type="submit">Entrar</button>
                         </form>
+                        <div class="auth-help mt-4">
+                            <strong>Dica:</strong> use o botão <span class="badge rounded-pill text-bg-secondary">Tema</span> no canto para testar os presets antes mesmo de logar.
+                        </div>
                     </div>
                 </div>
             </div>

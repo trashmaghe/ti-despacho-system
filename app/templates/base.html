@@ -4,6 +4,26 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{{ app_name }}{% endblock %}</title>
+    <script>
+        (() => {
+            const defaultTheme = {{ default_theme_id|tojson }};
+            const themeModes = {
+                'railway-night': 'dark',
+                'midnight-circuit': 'dark',
+                'paper-grid': 'light',
+                'civic-breeze': 'light'
+            };
+            try {
+                const savedTheme = localStorage.getItem('controle-ti:theme') || defaultTheme;
+                const mode = themeModes[savedTheme] || themeModes[defaultTheme] || 'dark';
+                document.documentElement.dataset.theme = savedTheme;
+                document.documentElement.dataset.colorMode = mode;
+            } catch (error) {
+                document.documentElement.dataset.theme = defaultTheme;
+                document.documentElement.dataset.colorMode = themeModes[defaultTheme] || 'dark';
+            }
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,6 +32,45 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body>
+    <div class="ambient-glow"></div>
+
+    <div class="theme-fab-wrap">
+        <button class="theme-fab" type="button" data-theme-toggle aria-expanded="false" aria-label="Abrir seletor de tema">
+            <span class="theme-fab-icon">◐</span>
+            <span class="theme-fab-text">Tema</span>
+        </button>
+        <div class="theme-panel" data-theme-panel>
+            <div class="theme-panel-header">
+                <div>
+                    <span class="eyebrow eyebrow-compact">APARÊNCIA</span>
+                    <h2>Temas do sistema</h2>
+                    <p>Alterne entre light/dark e troque o preset sem mexer no banco.</p>
+                </div>
+                <span class="theme-mode-indicator" data-current-mode-label>Modo escuro</span>
+            </div>
+            <div class="theme-mode-switcher">
+                <button type="button" class="theme-mode-btn" data-theme-mode="dark" aria-pressed="false">Dark mode</button>
+                <button type="button" class="theme-mode-btn" data-theme-mode="light" aria-pressed="false">Light mode</button>
+            </div>
+            <div class="theme-grid">
+                {% for preset in theme_presets %}
+                <button type="button" class="theme-card-btn" data-theme-id="{{ preset.id }}" aria-pressed="false">
+                    <span class="theme-card-preview theme-preview-{{ preset.id }}"></span>
+                    <span class="theme-card-copy">
+                        <strong>{{ preset.name }}</strong>
+                        <small>{{ preset.description }}</small>
+                    </span>
+                    <span class="theme-card-tag">{{ preset.tag }}</span>
+                </button>
+                {% endfor %}
+            </div>
+            <div class="theme-panel-footer">
+                <strong>Para criar um tema novo depois:</strong>
+                <span>duplique um bloco em <code>app/static/css/style.css</code> e cadastre o novo preset em <code>app/theme_presets.py</code>.</span>
+            </div>
+        </div>
+    </div>
+
     <div class="app-shell">
         {% if current_user.is_authenticated %}
         <header class="topbar sticky-top">
@@ -21,10 +80,10 @@
                         <span class="brand-icon">TI</span>
                         <span>
                             <strong>{{ app_name }}</strong>
-                            <small>Recebimento & despacho</small>
+                            <small>Recebimento &amp; despacho</small>
                         </span>
                     </a>
-                    <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false">
+                    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarMain">
@@ -36,22 +95,25 @@
                             <li class="nav-item"><a class="nav-link {% if request.blueprint == 'users' and request.endpoint != 'users.my_account' %}active{% endif %}" href="{{ url_for('users.list_users') }}">Usuários</a></li>
                             {% endif %}
                         </ul>
-                        <div class="user-chip dropdown">
-                            <button class="btn user-chip-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                <span class="avatar-dot">{{ current_user.display_name[:1] | upper }}</span>
-                                <span class="text-start d-none d-md-inline-block">
-                                    <strong>{{ current_user.display_name }}</strong>
-                                    <small>{{ 'Administrador' if current_user.is_admin else 'Operador' }}</small>
-                                </span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border-0">
-                                <li><a class="dropdown-item" href="{{ url_for('users.my_account') }}">Minha conta</a></li>
-                                {% if current_user.is_admin %}
-                                <li><a class="dropdown-item" href="{{ url_for('users.list_users') }}">Gerenciar usuários</a></li>
-                                {% endif %}
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">Sair</a></li>
-                            </ul>
+                        <div class="d-flex align-items-center gap-2 ms-xl-3 flex-wrap justify-content-end">
+                            <button class="btn btn-surface btn-sm d-none d-md-inline-flex" type="button" data-theme-toggle aria-expanded="false">Aparência</button>
+                            <div class="user-chip dropdown">
+                                <button class="btn user-chip-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="avatar-dot">{{ current_user.display_name[:1] | upper }}</span>
+                                    <span class="text-start d-none d-md-inline-block">
+                                        <strong>{{ current_user.display_name }}</strong>
+                                        <small>{{ 'Administrador' if current_user.is_admin else 'Operador' }}</small>
+                                    </span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+                                    <li><a class="dropdown-item" href="{{ url_for('users.my_account') }}">Minha conta</a></li>
+                                    {% if current_user.is_admin %}
+                                    <li><a class="dropdown-item" href="{{ url_for('users.list_users') }}">Gerenciar usuários</a></li>
+                                    {% endif %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">Sair</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </nav>
@@ -78,6 +140,10 @@
         </main>
     </div>
 
+    <script>
+        window.APP_THEME_PRESETS = {{ theme_presets|tojson }};
+        window.DEFAULT_THEME_ID = {{ default_theme_id|tojson }};
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     {% block extra_scripts %}{% endblock %}

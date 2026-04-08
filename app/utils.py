@@ -5,7 +5,7 @@ import io
 from datetime import datetime
 from functools import wraps
 
-from flask import Response, abort, flash, redirect, url_for
+from flask import Response, flash, redirect, url_for
 from flask_login import current_user
 from sqlalchemy import inspect, text
 
@@ -25,12 +25,14 @@ STATUS_BADGE_MAP = {
 def seed_admin(app, db, User):
     username = app.config["ADMIN_USERNAME"]
     password = app.config["ADMIN_PASSWORD"]
+    full_name = app.config.get("ADMIN_FULL_NAME", "Administrador")
+    sync_password = app.config.get("SYNC_ADMIN_PASSWORD_ON_STARTUP", False)
 
     admin = User.query.filter_by(username=username).first()
     if not admin:
         admin = User(
             username=username,
-            full_name="Administrador",
+            full_name=full_name,
             is_admin=True,
             is_active=True,
         )
@@ -41,13 +43,16 @@ def seed_admin(app, db, User):
 
     changed = False
     if not admin.full_name:
-        admin.full_name = "Administrador"
+        admin.full_name = full_name
         changed = True
     if not admin.is_admin:
         admin.is_admin = True
         changed = True
     if not admin.is_active:
         admin.is_active = True
+        changed = True
+    if sync_password and password and not admin.check_password(password):
+        admin.set_password(password)
         changed = True
     if changed:
         db.session.commit()

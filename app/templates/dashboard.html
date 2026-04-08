@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 {% block title %}Dashboard - {{ app_name }}{% endblock %}
 {% block content %}
-<section class="page-header mb-4">
+<section class="page-header page-header-rich mb-4">
     <div>
         <span class="eyebrow">VISÃO GERAL</span>
         <h1 class="page-title">Dashboard operacional</h1>
-        <p class="page-subtitle">Resumo dos atendimentos, equipamentos e movimentações mais recentes do setor.</p>
+        <p class="page-subtitle">Resumo dos atendimentos, equipamentos, usuários e aparência do sistema em um só lugar.</p>
     </div>
     <div class="d-flex flex-wrap gap-2">
         <a href="{{ url_for('main.create_record') }}" class="btn btn-primary">Novo recebimento</a>
-        <a href="{{ url_for('main.records_list') }}" class="btn btn-outline-light">Ver equipamentos</a>
+        <a href="{{ url_for('main.records_list') }}" class="btn btn-surface">Ver equipamentos</a>
     </div>
 </section>
 
@@ -52,7 +52,7 @@
                     <h2 class="h4 mb-1">Últimos registros</h2>
                     <p class="text-secondary mb-0">Acompanhe os cadastros mais recentes do sistema.</p>
                 </div>
-                <a href="{{ url_for('main.records_list') }}" class="btn btn-sm btn-outline-light">Ver todos</a>
+                <a href="{{ url_for('main.records_list') }}" class="btn btn-sm btn-surface">Ver todos</a>
             </div>
             <div class="card-body p-0">
                 {% if latest_records %}
@@ -76,7 +76,7 @@
                                 <td>{{ record.asset_tag }}</td>
                                 <td><span class="status-pill {{ status_badge_class(record.status) }}">{{ record.status }}</span></td>
                                 <td>{{ record.received_date.strftime('%d/%m/%Y') }}</td>
-                                <td class="text-end"><a href="{{ url_for('main.record_detail', record_id=record.id) }}" class="btn btn-sm btn-outline-light">Detalhes</a></td>
+                                <td class="text-end"><a href="{{ url_for('main.record_detail', record_id=record.id) }}" class="btn btn-sm btn-surface">Detalhes</a></td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -92,8 +92,8 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-4">
-        <div class="card glass-card border-0 shadow-xl h-100">
+    <div class="col-xl-4 d-grid gap-4">
+        <div class="card glass-card border-0 shadow-xl">
             <div class="card-body p-4">
                 <span class="eyebrow">ATALHOS</span>
                 <h2 class="h4 mt-2 mb-4">Ações rápidas</h2>
@@ -117,6 +117,27 @@
                         <span>Atualize nome e senha do seu acesso</span>
                     </a>
                     {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card glass-card border-0 shadow-xl">
+            <div class="card-body p-4">
+                <span class="eyebrow">TEMAS</span>
+                <h2 class="h4 mt-2 mb-3">Sistema de presets</h2>
+                <p class="text-secondary mb-3">A v3 já vem com 4 estilos prontos e alternância light/dark sem depender do banco.</p>
+                <div class="theme-inline-grid">
+                    {% for preset in theme_presets %}
+                    <button type="button" class="theme-mini-card" data-theme-id="{{ preset.id }}">
+                        <span class="theme-card-preview theme-preview-{{ preset.id }}"></span>
+                        <strong>{{ preset.name }}</strong>
+                        <small>{{ preset.mode|title }}</small>
+                    </button>
+                    {% endfor %}
+                </div>
+                <div class="theme-dev-note mt-3">
+                    <strong>Customização futura:</strong>
+                    <span>duplique um preset em <code>style.css</code> e registre o novo ID em <code>theme_presets.py</code>.</span>
                 </div>
             </div>
         </div>
