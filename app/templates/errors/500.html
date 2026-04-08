@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}Erro interno{% endblock %}
 {% block content %}
-<div class="text-center py-5">
-    <h1 class="display-5 fw-bold">500</h1>
-    <p class="text-secondary">Ocorreu um erro interno. Tente novamente.</p>
+<div class="empty-state py-5 text-center">
+    <h1 class="display-4 fw-bold mb-3">500</h1>
+    <p class="text-secondary mb-4">Ocorreu um erro interno ao processar sua solicitação.</p>
     <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">Voltar ao início</a>
 </div>
 {% endblock %}

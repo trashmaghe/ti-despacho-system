@@ -1,71 +1,89 @@
 {% extends 'base.html' %}
-{% block title %}{{ 'Editar registro' if record else 'Novo recebimento' }} - {{ app_name }}{% endblock %}
+{% set is_edit = record is not none %}
+{% block title %}{{ 'Editar equipamento' if is_edit else 'Novo recebimento' }} - {{ app_name }}{% endblock %}
 {% block content %}
-{% set data = form_data or record %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<section class="page-header mb-4">
     <div>
-        <h1 class="h3 mb-1">{{ 'Editar registro' if record else 'Novo recebimento' }}</h1>
-        <p class="text-secondary mb-0">Preencha os dados de entrada do equipamento.</p>
+        <span class="eyebrow">{{ 'ATUALIZAÇÃO DE REGISTRO' if is_edit else 'NOVO RECEBIMENTO' }}</span>
+        <h1 class="page-title">{{ 'Editar equipamento' if is_edit else 'Cadastrar recebimento' }}</h1>
+        <p class="page-subtitle">Preencha os dados operacionais para manter o histórico técnico completo.</p>
     </div>
-    <a href="{{ url_for('main.records_list') }}" class="btn btn-outline-secondary">Voltar</a>
-</div>
+    <div class="d-flex flex-wrap gap-2">
+        {% if is_edit %}
+        <a href="{{ url_for('main.record_detail', record_id=record.id) }}" class="btn btn-outline-light">Voltar aos detalhes</a>
+        {% else %}
+        <a href="{{ url_for('main.records_list') }}" class="btn btn-outline-light">Voltar à listagem</a>
+        {% endif %}
+    </div>
+</section>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-body p-4">
-        <form method="post" class="row g-3" novalidate>
-            <div class="col-md-6">
-                <label class="form-label" for="responsible_name">Nome do responsável</label>
-                <input class="form-control" type="text" id="responsible_name" name="responsible_name" value="{{ data.responsible_name if data else '' }}" required>
+{% set form_source = form_data if form_data is not none else record %}
+<form method="post" class="row g-4">
+    <div class="col-12">
+        <div class="card glass-card border-0 shadow-xl">
+            <div class="card-body p-4 p-lg-5">
+                <div class="section-title mb-4">
+                    <h2 class="h4 mb-1">Dados do responsável e equipamento</h2>
+                    <p class="text-secondary mb-0">Informações principais para identificação do item recebido.</p>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nome do responsável</label>
+                        <input type="text" name="responsible_name" class="form-control" value="{{ form_source.responsible_name if form_source else '' }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Setor / departamento</label>
+                        <input type="text" name="department" class="form-control" value="{{ form_source.department if form_source else '' }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Patrimônio</label>
+                        <input type="text" name="asset_tag" class="form-control" value="{{ form_source.asset_tag if form_source else '' }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Marca / modelo</label>
+                        <input type="text" name="brand_model" class="form-control" value="{{ form_source.brand_model if form_source else '' }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Número de série</label>
+                        <input type="text" name="serial_number" class="form-control" value="{{ form_source.serial_number if form_source else '' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Data de recebimento</label>
+                        <input type="date" name="received_date" class="form-control" value="{{ form_source.received_date.strftime('%Y-%m-%d') if form_source and form_source.received_date else '' }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Técnico responsável</label>
+                        <input type="text" name="received_by" class="form-control" value="{{ form_source.received_by if form_source else '' }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Status atual</label>
+                        <select name="status" class="form-select" required>
+                            {% for item in statuses %}
+                            {% set selected_status = form_source.status if form_source else 'Recebido' %}
+                            <option value="{{ item }}" {% if selected_status == item %}selected{% endif %}>{{ item }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Problema relatado</label>
+                        <textarea name="issue_reported" class="form-control" rows="4" required>{{ form_source.issue_reported if form_source else '' }}</textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Acessórios entregues</label>
+                        <textarea name="accessories" class="form-control" rows="3">{{ form_source.accessories if form_source else '' }}</textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Observações</label>
+                        <textarea name="notes" class="form-control" rows="3">{{ form_source.notes if form_source else '' }}</textarea>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6">
-                <label class="form-label" for="department">Setor / departamento</label>
-                <input class="form-control" type="text" id="department" name="department" value="{{ data.department if data else '' }}" required>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label" for="asset_tag">Patrimônio</label>
-                <input class="form-control" type="text" id="asset_tag" name="asset_tag" value="{{ data.asset_tag if data else '' }}" required>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label" for="brand_model">Marca / modelo</label>
-                <input class="form-control" type="text" id="brand_model" name="brand_model" value="{{ data.brand_model if data else '' }}" required>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label" for="serial_number">Número de série</label>
-                <input class="form-control" type="text" id="serial_number" name="serial_number" value="{{ data.serial_number if data else '' }}">
-            </div>
-            <div class="col-12">
-                <label class="form-label" for="issue_reported">Problema relatado</label>
-                <textarea class="form-control" id="issue_reported" name="issue_reported" rows="4" required>{{ data.issue_reported if data else '' }}</textarea>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label" for="accessories">Acessórios entregues</label>
-                <textarea class="form-control" id="accessories" name="accessories" rows="3">{{ data.accessories if data else '' }}</textarea>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label" for="notes">Observações</label>
-                <textarea class="form-control" id="notes" name="notes" rows="3">{{ data.notes if data else '' }}</textarea>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label" for="received_date">Data de recebimento</label>
-                <input class="form-control" type="date" id="received_date" name="received_date" value="{% if data %}{{ data.received_date if data.received_date is string else data.received_date.strftime('%Y-%m-%d') }}{% endif %}" required>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label" for="received_by">Técnico responsável pelo recebimento</label>
-                <input class="form-control" type="text" id="received_by" name="received_by" value="{{ data.received_by if data else '' }}" required>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label" for="status">Status</label>
-                <select class="form-select" id="status" name="status" required>
-                    {% for item in statuses %}
-                    <option value="{{ item }}" {% if data and data.status == item %}selected{% endif %}>{{ item }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-12 d-flex gap-2 justify-content-end">
-                <a href="{{ url_for('main.records_list') }}" class="btn btn-outline-secondary">Cancelar</a>
-                <button class="btn btn-primary" type="submit">{{ 'Salvar alterações' if record else 'Cadastrar recebimento' }}</button>
-            </div>
-        </form>
+        </div>
     </div>
-</div>
+
+    <div class="col-12 d-flex flex-wrap gap-2 justify-content-end">
+        <a href="{{ url_for('main.record_detail', record_id=record.id) if is_edit else url_for('main.records_list') }}" class="btn btn-outline-light">Cancelar</a>
+        <button type="submit" class="btn btn-primary">{{ 'Salvar alterações' if is_edit else 'Cadastrar equipamento' }}</button>
+    </div>
+</form>
 {% endblock %}

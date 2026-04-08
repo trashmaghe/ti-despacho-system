@@ -1,43 +1,68 @@
 {% extends 'base.html' %}
 {% block title %}Despacho - {{ record.reference_code }}{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<section class="page-header mb-4">
     <div>
-        <h1 class="h3 mb-1">Registrar despacho</h1>
-        <p class="text-secondary mb-0">Finalize a devolução do equipamento {{ record.reference_code }}.</p>
+        <span class="eyebrow">DEVOLUÇÃO / ENTREGA</span>
+        <h1 class="page-title">Registrar despacho</h1>
+        <p class="page-subtitle">Finalize o fluxo do equipamento {{ record.reference_code }}.</p>
     </div>
-    <a href="{{ url_for('main.record_detail', record_id=record.id) }}" class="btn btn-outline-secondary">Voltar</a>
-</div>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{{ url_for('main.record_detail', record_id=record.id) }}" class="btn btn-outline-light">Voltar aos detalhes</a>
+    </div>
+</section>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-body p-4">
-        <form method="post" class="row g-3">
-            <div class="col-md-6">
-                <label class="form-label" for="dispatched_date">Data de saída</label>
-                <input class="form-control" type="date" id="dispatched_date" name="dispatched_date" value="{{ record.dispatched_date.strftime('%Y-%m-%d') if record.dispatched_date else '' }}" required>
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card glass-card border-0 shadow-xl h-100">
+            <div class="card-body p-4">
+                <h2 class="h5 mb-3">Resumo do equipamento</h2>
+                <div class="stack-gap-sm">
+                    <div class="summary-row"><span>Código</span><strong>{{ record.reference_code }}</strong></div>
+                    <div class="summary-row"><span>Responsável</span><strong>{{ record.responsible_name }}</strong></div>
+                    <div class="summary-row"><span>Patrimônio</span><strong>{{ record.asset_tag }}</strong></div>
+                    <div class="summary-row"><span>Status atual</span><span class="status-pill {{ status_badge_class(record.status) }}">{{ record.status }}</span></div>
+                </div>
             </div>
-            <div class="col-md-6">
-                <label class="form-label" for="final_status">Status final</label>
-                <select class="form-select" id="final_status" name="final_status" required>
-                    <option value="Pronto para devolução" {% if record.status == 'Pronto para devolução' %}selected{% endif %}>Pronto para devolução</option>
-                    <option value="Entregue" {% if record.status == 'Entregue' %}selected{% endif %}>Entregue</option>
-                </select>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <form method="post" class="card glass-card border-0 shadow-xl">
+            <div class="card-body p-4 p-lg-5">
+                <div class="section-title mb-4">
+                    <h2 class="h4 mb-1">Dados da saída</h2>
+                    <p class="text-secondary mb-0">Preencha os dados da devolução ao responsável.</p>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Data de saída</label>
+                        <input type="date" name="dispatched_date" class="form-control" value="{{ request.form.get('dispatched_date', record.dispatched_date.strftime('%Y-%m-%d') if record.dispatched_date else '') }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Quem retirou</label>
+                        <input type="text" name="withdrawn_by" class="form-control" value="{{ request.form.get('withdrawn_by', record.withdrawn_by or '') }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Técnico responsável pela entrega</label>
+                        <input type="text" name="delivered_by" class="form-control" value="{{ request.form.get('delivered_by', record.delivered_by or '') }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Status final</label>
+                        <select name="final_status" class="form-select" required>
+                            {% set final_status_value = request.form.get('final_status', record.status if record.status in ['Pronto para devolução', 'Entregue'] else 'Entregue') %}
+                            <option value="Pronto para devolução" {% if final_status_value == 'Pronto para devolução' %}selected{% endif %}>Pronto para devolução</option>
+                            <option value="Entregue" {% if final_status_value == 'Entregue' %}selected{% endif %}>Entregue</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Observações da saída</label>
+                        <textarea name="dispatch_notes" class="form-control" rows="4">{{ request.form.get('dispatch_notes', record.dispatch_notes or '') }}</textarea>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6">
-                <label class="form-label" for="withdrawn_by">Quem retirou</label>
-                <input class="form-control" type="text" id="withdrawn_by" name="withdrawn_by" value="{{ record.withdrawn_by or '' }}" required>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label" for="delivered_by">Técnico responsável pela entrega</label>
-                <input class="form-control" type="text" id="delivered_by" name="delivered_by" value="{{ record.delivered_by or '' }}" required>
-            </div>
-            <div class="col-12">
-                <label class="form-label" for="dispatch_notes">Observações de saída</label>
-                <textarea class="form-control" id="dispatch_notes" name="dispatch_notes" rows="4">{{ record.dispatch_notes or '' }}</textarea>
-            </div>
-            <div class="col-12 d-flex justify-content-end gap-2">
-                <a href="{{ url_for('main.record_detail', record_id=record.id) }}" class="btn btn-outline-secondary">Cancelar</a>
-                <button class="btn btn-success" type="submit">Salvar despacho</button>
+            <div class="card-footer bg-transparent border-0 px-4 px-lg-5 pb-4 d-flex flex-wrap justify-content-end gap-2">
+                <a href="{{ url_for('main.record_detail', record_id=record.id) }}" class="btn btn-outline-light">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Salvar despacho</button>
             </div>
         </form>
     </div>

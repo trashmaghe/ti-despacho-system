@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Usuários - {{ app_name }}{% endblock %}
+{% block content %}
+<section class="page-header mb-4">
+    <div>
+        <span class="eyebrow">ADMINISTRAÇÃO</span>
+        <h1 class="page-title">Gerenciar usuários</h1>
+        <p class="page-subtitle">Crie acessos, ajuste permissões e ative ou desative operadores.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{{ url_for('users.create_user') }}" class="btn btn-primary">Novo usuário</a>
+    </div>
+</section>
+
+<div class="card glass-card border-0 shadow-xl">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-darkish align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Nome</th>
+                        <th>Perfil</th>
+                        <th>Status</th>
+                        <th>Último login</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td><strong>{{ user.username }}</strong></td>
+                        <td>{{ user.display_name }}</td>
+                        <td>{{ 'Administrador' if user.is_admin else 'Operador' }}</td>
+                        <td>
+                            <span class="status-pill {{ 'status-entregue' if user.is_active else 'status-default' }}">
+                                {{ 'Ativo' if user.is_active else 'Inativo' }}
+                            </span>
+                        </td>
+                        <td>{{ user.last_login_at.strftime('%d/%m/%Y %H:%M') if user.last_login_at else 'Nunca acessou' }}</td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('users.edit_user', user_id=user.id) }}" class="btn btn-outline-light">Editar</a>
+                                {% if user.id != current_user.id %}
+                                <form method="post" action="{{ url_for('users.toggle_user', user_id=user.id) }}">
+                                    <button type="submit" class="btn btn-outline-warning">{{ 'Desativar' if user.is_active else 'Ativar' }}</button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

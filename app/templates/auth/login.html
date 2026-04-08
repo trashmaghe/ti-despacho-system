@@ -1,25 +1,51 @@
 {% extends 'base.html' %}
 {% block title %}Login - {{ app_name }}{% endblock %}
 {% block content %}
-<div class="row justify-content-center align-items-center min-vh-75">
-    <div class="col-md-6 col-lg-4">
-        <div class="card shadow-lg border-0">
-            <div class="card-body p-4 p-lg-5">
-                <div class="text-center mb-4">
-                    <h1 class="h3 fw-bold mb-2">{{ app_name }}</h1>
-                    <p class="text-secondary mb-0">Acesse o painel de recebimento e despacho.</p>
+<div class="row justify-content-center align-items-center min-vh-80">
+    <div class="col-xl-10">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="hero-panel h-100">
+                    <span class="eyebrow">PAINEL INTERNO</span>
+                    <h1 class="display-5 fw-bold mb-3">Controle moderno de entrada e devolução de equipamentos.</h1>
+                    <p class="text-secondary-emphasis mb-4">Tema escuro inspirado em produtos modernos como Railway, foco em rapidez operacional e organização do setor de TI.</p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="feature-card">
+                                <strong>Recebimento rápido</strong>
+                                <p>Cadastro claro, protocolo automático e histórico do equipamento.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="feature-card">
+                                <strong>Gestão de usuários</strong>
+                                <p>Controle de operadores, administradores e alteração de senha.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <form method="post" novalidate>
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Usuário</label>
-                        <input type="text" class="form-control" id="username" name="username" required autofocus>
+            </div>
+            <div class="col-lg-5 ms-auto">
+                <div class="card glass-card auth-card shadow-xl border-0">
+                    <div class="card-body p-4 p-lg-5">
+                        <div class="mb-4 text-center text-lg-start">
+                            <span class="eyebrow">ACESSO SEGURO</span>
+                            <h2 class="h2 fw-bold mt-2 mb-2">Entrar no sistema</h2>
+                            <p class="text-secondary mb-0">Use suas credenciais para acessar o painel administrativo.</p>
+                        </div>
+                        <form method="post" novalidate class="stack-gap">
+                            <div>
+                                <label for="username" class="form-label">Usuário</label>
+                                <input type="text" class="form-control form-control-lg" id="username" name="username" required autofocus>
+                            </div>
+                            <div>
+                                <label for="password" class="form-label">Senha</label>
+                                <input type="password" class="form-control form-control-lg" id="password" name="password" required>
+                            </div>
+                            <button class="btn btn-primary btn-lg w-100 mt-2" type="submit">Entrar</button>
+                        </form>
                     </div>
-                    <div class="mb-4">
-                        <label for="password" class="form-label">Senha</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <button class="btn btn-primary w-100" type="submit">Entrar</button>
-                </form>
+                </div>
             </div>
         </div>
     </div>

@@ -1,25 +1,26 @@
 {% extends 'base.html' %}
 {% block title %}Equipamentos - {{ app_name }}{% endblock %}
 {% block content %}
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-4 gap-3">
+<section class="page-header mb-4">
     <div>
-        <h1 class="h3 mb-1">Equipamentos</h1>
-        <p class="text-secondary mb-0">Consulte, filtre e gerencie os registros cadastrados.</p>
+        <span class="eyebrow">ACERVO TÉCNICO</span>
+        <h1 class="page-title">Equipamentos cadastrados</h1>
+        <p class="page-subtitle">Pesquise, filtre e gerencie o ciclo completo dos atendimentos.</p>
     </div>
-    <div class="d-flex gap-2">
-        <a href="{{ url_for('main.export_records', search=search, status=status) }}" class="btn btn-outline-success">Exportar CSV</a>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{{ url_for('main.export_records', search=search, status=status) }}" class="btn btn-outline-light">Exportar CSV</a>
         <a href="{{ url_for('main.create_record') }}" class="btn btn-primary">Novo recebimento</a>
     </div>
-</div>
+</section>
 
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body">
-        <form method="get" class="row g-3">
-            <div class="col-md-6">
-                <label for="search" class="form-label">Buscar</label>
+<div class="card glass-card border-0 shadow-xl mb-4">
+    <div class="card-body p-4">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-lg-6">
+                <label for="search" class="form-label">Busca geral</label>
                 <input type="text" class="form-control" id="search" name="search" value="{{ search }}" placeholder="Nome, patrimônio, série, setor ou código">
             </div>
-            <div class="col-md-4">
+            <div class="col-lg-4">
                 <label for="status" class="form-label">Status</label>
                 <select class="form-select" id="status" name="status">
                     <option value="">Todos</option>
@@ -28,19 +29,19 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-md-2 d-grid align-self-end">
-                <button class="btn btn-dark" type="submit">Filtrar</button>
+            <div class="col-lg-2 d-grid">
+                <button class="btn btn-primary" type="submit">Filtrar</button>
             </div>
         </form>
     </div>
 </div>
 
-<div class="card border-0 shadow-sm">
+<div class="card glass-card border-0 shadow-xl">
     <div class="card-body p-0">
         {% if records %}
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
+            <table class="table table-darkish align-middle mb-0">
+                <thead>
                     <tr>
                         <th>Código</th>
                         <th>Responsável</th>
@@ -54,16 +55,16 @@
                 <tbody>
                 {% for record in records %}
                     <tr>
-                        <td>{{ record.reference_code }}</td>
+                        <td><strong>{{ record.reference_code }}</strong></td>
                         <td>{{ record.responsible_name }}</td>
                         <td>{{ record.department }}</td>
                         <td>{{ record.asset_tag }}</td>
-                        <td><span class="badge text-bg-secondary">{{ record.status }}</span></td>
+                        <td><span class="status-pill {{ status_badge_class(record.status) }}">{{ record.status }}</span></td>
                         <td>{{ record.received_date.strftime('%d/%m/%Y') }}</td>
                         <td class="text-end">
                             <div class="btn-group btn-group-sm">
-                                <a href="{{ url_for('main.record_detail', record_id=record.id) }}" class="btn btn-outline-dark">Ver</a>
-                                <a href="{{ url_for('main.edit_record', record_id=record.id) }}" class="btn btn-outline-primary">Editar</a>
+                                <a href="{{ url_for('main.record_detail', record_id=record.id) }}" class="btn btn-outline-light">Ver</a>
+                                <a href="{{ url_for('main.edit_record', record_id=record.id) }}" class="btn btn-outline-light">Editar</a>
                                 <a href="{{ url_for('main.dispatch_record', record_id=record.id) }}" class="btn btn-outline-success">Despacho</a>
                             </div>
                         </td>
@@ -73,14 +74,17 @@
             </table>
         </div>
         {% else %}
-        <div class="p-4 text-secondary">Nenhum registro encontrado para os filtros informados.</div>
+        <div class="empty-state py-5 px-4">
+            <h3 class="h5">Nenhum registro encontrado</h3>
+            <p class="text-secondary mb-0">Tente ajustar os filtros para localizar outros equipamentos.</p>
+        </div>
         {% endif %}
     </div>
 </div>
 
 {% if pagination.pages > 1 %}
 <nav class="mt-4">
-    <ul class="pagination justify-content-center">
+    <ul class="pagination justify-content-center pagination-soft">
         {% if pagination.has_prev %}
         <li class="page-item">
             <a class="page-link" href="{{ url_for('main.records_list', page=pagination.prev_num, search=search, status=status) }}">Anterior</a>

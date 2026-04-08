@@ -1,87 +1,125 @@
 {% extends 'base.html' %}
 {% block title %}Dashboard - {{ app_name }}{% endblock %}
 {% block content %}
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-4 gap-3">
+<section class="page-header mb-4">
     <div>
-        <h1 class="h3 mb-1">Dashboard</h1>
-        <p class="text-secondary mb-0">Resumo geral dos equipamentos cadastrados.</p>
+        <span class="eyebrow">VISÃO GERAL</span>
+        <h1 class="page-title">Dashboard operacional</h1>
+        <p class="page-subtitle">Resumo dos atendimentos, equipamentos e movimentações mais recentes do setor.</p>
     </div>
-    <a href="{{ url_for('main.create_record') }}" class="btn btn-primary">Novo recebimento</a>
-</div>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{{ url_for('main.create_record') }}" class="btn btn-primary">Novo recebimento</a>
+        <a href="{{ url_for('main.records_list') }}" class="btn btn-outline-light">Ver equipamentos</a>
+    </div>
+</section>
 
 <div class="row g-4 mb-4">
-    <div class="col-md-6 col-xl-3">
-        <div class="card stat-card border-0 shadow-sm">
-            <div class="card-body">
-                <span class="small text-uppercase text-secondary">Total recebidos</span>
-                <div class="display-6 fw-bold mt-2">{{ stats.total }}</div>
-            </div>
+    <div class="col-sm-6 col-xxl-3">
+        <div class="metric-card metric-primary">
+            <span class="metric-label">Total recebidos</span>
+            <div class="metric-value">{{ stats.total }}</div>
+            <small>Todos os registros cadastrados</small>
         </div>
     </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="card stat-card border-0 shadow-sm">
-            <div class="card-body">
-                <span class="small text-uppercase text-secondary">Em manutenção</span>
-                <div class="display-6 fw-bold mt-2">{{ stats.em_manutencao }}</div>
-            </div>
+    <div class="col-sm-6 col-xxl-3">
+        <div class="metric-card metric-warning">
+            <span class="metric-label">Em manutenção</span>
+            <div class="metric-value">{{ stats.em_manutencao }}</div>
+            <small>Demandas ativas no setor</small>
         </div>
     </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="card stat-card border-0 shadow-sm">
-            <div class="card-body">
-                <span class="small text-uppercase text-secondary">Prontos</span>
-                <div class="display-6 fw-bold mt-2">{{ stats.pronto }}</div>
-            </div>
+    <div class="col-sm-6 col-xxl-3">
+        <div class="metric-card metric-success">
+            <span class="metric-label">Prontos</span>
+            <div class="metric-value">{{ stats.pronto }}</div>
+            <small>Disponíveis para devolução</small>
         </div>
     </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="card stat-card border-0 shadow-sm">
-            <div class="card-body">
-                <span class="small text-uppercase text-secondary">Entregues</span>
-                <div class="display-6 fw-bold mt-2">{{ stats.entregue }}</div>
-            </div>
+    <div class="col-sm-6 col-xxl-3">
+        <div class="metric-card metric-neutral">
+            <span class="metric-label">Entregues</span>
+            <div class="metric-value">{{ stats.entregue }}</div>
+            <small>Processos concluídos</small>
         </div>
     </div>
 </div>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h2 class="h5 mb-0">Últimos registros</h2>
-        <a href="{{ url_for('main.records_list') }}" class="btn btn-sm btn-outline-primary">Ver todos</a>
-    </div>
-    <div class="card-body p-0">
-        {% if latest_records %}
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Código</th>
-                        <th>Responsável</th>
-                        <th>Patrimônio</th>
-                        <th>Status</th>
-                        <th>Data</th>
-                        <th class="text-end">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for record in latest_records %}
-                    <tr>
-                        <td>{{ record.reference_code }}</td>
-                        <td>{{ record.responsible_name }}</td>
-                        <td>{{ record.asset_tag }}</td>
-                        <td><span class="badge text-bg-secondary">{{ record.status }}</span></td>
-                        <td>{{ record.received_date.strftime('%d/%m/%Y') }}</td>
-                        <td class="text-end">
-                            <a href="{{ url_for('main.record_detail', record_id=record.id) }}" class="btn btn-sm btn-outline-dark">Detalhes</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="card glass-card border-0 shadow-xl h-100">
+            <div class="card-header border-0 bg-transparent d-flex justify-content-between align-items-center py-4">
+                <div>
+                    <h2 class="h4 mb-1">Últimos registros</h2>
+                    <p class="text-secondary mb-0">Acompanhe os cadastros mais recentes do sistema.</p>
+                </div>
+                <a href="{{ url_for('main.records_list') }}" class="btn btn-sm btn-outline-light">Ver todos</a>
+            </div>
+            <div class="card-body p-0">
+                {% if latest_records %}
+                <div class="table-responsive">
+                    <table class="table table-darkish align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Responsável</th>
+                                <th>Patrimônio</th>
+                                <th>Status</th>
+                                <th>Recebimento</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for record in latest_records %}
+                            <tr>
+                                <td><strong>{{ record.reference_code }}</strong></td>
+                                <td>{{ record.responsible_name }}</td>
+                                <td>{{ record.asset_tag }}</td>
+                                <td><span class="status-pill {{ status_badge_class(record.status) }}">{{ record.status }}</span></td>
+                                <td>{{ record.received_date.strftime('%d/%m/%Y') }}</td>
+                                <td class="text-end"><a href="{{ url_for('main.record_detail', record_id=record.id) }}" class="btn btn-sm btn-outline-light">Detalhes</a></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state py-5 px-4">
+                    <h3 class="h5">Nenhum equipamento cadastrado</h3>
+                    <p class="text-secondary mb-3">Comece registrando o primeiro recebimento do setor.</p>
+                    <a href="{{ url_for('main.create_record') }}" class="btn btn-primary">Cadastrar agora</a>
+                </div>
+                {% endif %}
+            </div>
         </div>
-        {% else %}
-        <div class="p-4 text-secondary">Nenhum equipamento cadastrado ainda.</div>
-        {% endif %}
+    </div>
+    <div class="col-xl-4">
+        <div class="card glass-card border-0 shadow-xl h-100">
+            <div class="card-body p-4">
+                <span class="eyebrow">ATALHOS</span>
+                <h2 class="h4 mt-2 mb-4">Ações rápidas</h2>
+                <div class="quick-links">
+                    <a class="quick-link" href="{{ url_for('main.create_record') }}">
+                        <strong>Novo recebimento</strong>
+                        <span>Cadastrar equipamento de entrada</span>
+                    </a>
+                    <a class="quick-link" href="{{ url_for('main.records_list', status='Pronto para devolução') }}">
+                        <strong>Itens prontos</strong>
+                        <span>Filtrar registros aptos para devolução</span>
+                    </a>
+                    {% if current_user.is_admin %}
+                    <a class="quick-link" href="{{ url_for('users.list_users') }}">
+                        <strong>Usuários</strong>
+                        <span>Criar, editar e desativar acessos</span>
+                    </a>
+                    {% else %}
+                    <a class="quick-link" href="{{ url_for('users.my_account') }}">
+                        <strong>Minha conta</strong>
+                        <span>Atualize nome e senha do seu acesso</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

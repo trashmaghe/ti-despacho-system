@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Minha conta - {{ app_name }}{% endblock %}
+{% block content %}
+<section class="page-header mb-4">
+    <div>
+        <span class="eyebrow">MINHA CONTA</span>
+        <h1 class="page-title">Perfil e senha</h1>
+        <p class="page-subtitle">Atualize seus dados pessoais e altere sua senha quando necessário.</p>
+    </div>
+</section>
+
+<form method="post" class="card glass-card border-0 shadow-xl">
+    <div class="card-body p-4 p-lg-5">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Nome completo</label>
+                <input type="text" name="full_name" class="form-control" value="{{ request.form.get('full_name', current_user.full_name or '') }}" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Usuário</label>
+                <input type="text" class="form-control" value="{{ current_user.username }}" disabled>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Senha atual</label>
+                <input type="password" name="current_password" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Nova senha</label>
+                <input type="password" name="new_password" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Confirmar nova senha</label>
+                <input type="password" name="confirm_password" class="form-control">
+            </div>
+        </div>
+    </div>
+    <div class="card-footer bg-transparent border-0 px-4 px-lg-5 pb-4 d-flex justify-content-end gap-2">
+        <button type="submit" class="btn btn-primary">Salvar conta</button>
+    </div>
+</form>
+{% endblock %}

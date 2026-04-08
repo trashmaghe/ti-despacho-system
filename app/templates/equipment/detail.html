@@ -1,90 +1,94 @@
 {% extends 'base.html' %}
 {% block title %}Detalhes - {{ record.reference_code }}{% endblock %}
 {% block content %}
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-4 gap-3">
+<section class="page-header mb-4">
     <div>
-        <h1 class="h3 mb-1">{{ record.reference_code }}</h1>
-        <p class="text-secondary mb-0">Detalhes completos do recebimento e do despacho.</p>
+        <span class="eyebrow">REGISTRO TÉCNICO</span>
+        <h1 class="page-title">{{ record.reference_code }}</h1>
+        <p class="page-subtitle">Histórico completo do recebimento e da devolução do equipamento.</p>
     </div>
     <div class="d-flex flex-wrap gap-2">
-        <a href="{{ url_for('main.print_receipt', record_id=record.id) }}" target="_blank" class="btn btn-outline-dark">Comprovante de recebimento</a>
+        <a href="{{ url_for('main.print_receipt', record_id=record.id) }}" target="_blank" class="btn btn-outline-light">Comprovante de recebimento</a>
         {% if record.dispatched_date %}
         <a href="{{ url_for('main.print_dispatch', record_id=record.id) }}" target="_blank" class="btn btn-outline-success">Comprovante de entrega</a>
         {% endif %}
-        <a href="{{ url_for('main.edit_record', record_id=record.id) }}" class="btn btn-outline-primary">Editar</a>
-        <a href="{{ url_for('main.dispatch_record', record_id=record.id) }}" class="btn btn-success">Registrar despacho</a>
+        <a href="{{ url_for('main.edit_record', record_id=record.id) }}" class="btn btn-outline-light">Editar</a>
+        <a href="{{ url_for('main.dispatch_record', record_id=record.id) }}" class="btn btn-primary">Registrar despacho</a>
     </div>
-</div>
+</section>
 
 <div class="row g-4">
-    <div class="col-lg-8">
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white py-3">
-                <h2 class="h5 mb-0">Dados do recebimento</h2>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-6"><strong>Responsável:</strong><br>{{ record.responsible_name }}</div>
-                    <div class="col-md-6"><strong>Setor:</strong><br>{{ record.department }}</div>
-                    <div class="col-md-4"><strong>Patrimônio:</strong><br>{{ record.asset_tag }}</div>
-                    <div class="col-md-4"><strong>Marca / modelo:</strong><br>{{ record.brand_model }}</div>
-                    <div class="col-md-4"><strong>Nº de série:</strong><br>{{ record.serial_number or '-' }}</div>
-                    <div class="col-md-6"><strong>Recebido em:</strong><br>{{ record.received_date.strftime('%d/%m/%Y') }}</div>
-                    <div class="col-md-6"><strong>Técnico responsável:</strong><br>{{ record.received_by }}</div>
-                    <div class="col-12"><strong>Problema relatado:</strong><br>{{ record.issue_reported }}</div>
-                    <div class="col-md-6"><strong>Acessórios:</strong><br>{{ record.accessories or '-' }}</div>
-                    <div class="col-md-6"><strong>Observações:</strong><br>{{ record.notes or '-' }}</div>
+    <div class="col-xl-8">
+        <div class="card glass-card border-0 shadow-xl mb-4">
+            <div class="card-body p-4 p-lg-5">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+                    <div>
+                        <h2 class="h4 mb-2">Dados do recebimento</h2>
+                        <p class="text-secondary mb-0">Informações registradas na entrada do equipamento.</p>
+                    </div>
+                    <span class="status-pill {{ status_badge_class(record.status) }}">{{ record.status }}</span>
+                </div>
+                <div class="row g-4 detail-grid">
+                    <div class="col-md-6"><span class="detail-label">Responsável</span><div class="detail-value">{{ record.responsible_name }}</div></div>
+                    <div class="col-md-6"><span class="detail-label">Setor</span><div class="detail-value">{{ record.department }}</div></div>
+                    <div class="col-md-4"><span class="detail-label">Patrimônio</span><div class="detail-value">{{ record.asset_tag }}</div></div>
+                    <div class="col-md-4"><span class="detail-label">Marca / modelo</span><div class="detail-value">{{ record.brand_model }}</div></div>
+                    <div class="col-md-4"><span class="detail-label">Número de série</span><div class="detail-value">{{ record.serial_number or '-' }}</div></div>
+                    <div class="col-md-6"><span class="detail-label">Data de recebimento</span><div class="detail-value">{{ record.received_date.strftime('%d/%m/%Y') }}</div></div>
+                    <div class="col-md-6"><span class="detail-label">Técnico responsável</span><div class="detail-value">{{ record.received_by }}</div></div>
+                    <div class="col-12"><span class="detail-label">Problema relatado</span><div class="detail-value detail-block">{{ record.issue_reported }}</div></div>
+                    <div class="col-12"><span class="detail-label">Acessórios</span><div class="detail-value detail-block">{{ record.accessories or '-' }}</div></div>
+                    <div class="col-12"><span class="detail-label">Observações</span><div class="detail-value detail-block">{{ record.notes or '-' }}</div></div>
                 </div>
             </div>
         </div>
 
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3">
-                <h2 class="h5 mb-0">Dados do despacho / devolução</h2>
-            </div>
-            <div class="card-body">
+        <div class="card glass-card border-0 shadow-xl">
+            <div class="card-body p-4 p-lg-5">
+                <div class="mb-4">
+                    <h2 class="h4 mb-2">Dados do despacho</h2>
+                    <p class="text-secondary mb-0">Informações preenchidas na devolução ou entrega do equipamento.</p>
+                </div>
                 {% if record.dispatched_date %}
-                <div class="row g-3">
-                    <div class="col-md-6"><strong>Data de saída:</strong><br>{{ record.dispatched_date.strftime('%d/%m/%Y') }}</div>
-                    <div class="col-md-6"><strong>Quem retirou:</strong><br>{{ record.withdrawn_by }}</div>
-                    <div class="col-md-6"><strong>Técnico responsável pela entrega:</strong><br>{{ record.delivered_by }}</div>
-                    <div class="col-md-6"><strong>Status final:</strong><br>{{ record.status }}</div>
-                    <div class="col-12"><strong>Observações de saída:</strong><br>{{ record.dispatch_notes or '-' }}</div>
+                <div class="row g-4 detail-grid">
+                    <div class="col-md-6"><span class="detail-label">Data de saída</span><div class="detail-value">{{ record.dispatched_date.strftime('%d/%m/%Y') }}</div></div>
+                    <div class="col-md-6"><span class="detail-label">Quem retirou</span><div class="detail-value">{{ record.withdrawn_by or '-' }}</div></div>
+                    <div class="col-md-6"><span class="detail-label">Técnico responsável</span><div class="detail-value">{{ record.delivered_by or '-' }}</div></div>
+                    <div class="col-12"><span class="detail-label">Observações da saída</span><div class="detail-value detail-block">{{ record.dispatch_notes or '-' }}</div></div>
                 </div>
                 {% else %}
-                <p class="text-secondary mb-0">Nenhum despacho registrado até o momento.</p>
+                <div class="empty-state py-4">
+                    <h3 class="h5">Despacho ainda não registrado</h3>
+                    <p class="text-secondary mb-3">Quando o equipamento for devolvido, registre a saída para concluir o fluxo.</p>
+                    <a href="{{ url_for('main.dispatch_record', record_id=record.id) }}" class="btn btn-primary">Registrar despacho</a>
+                </div>
                 {% endif %}
             </div>
         </div>
     </div>
 
-    <div class="col-lg-4">
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white py-3">
-                <h2 class="h5 mb-0">Resumo</h2>
-            </div>
-            <div class="card-body">
-                <dl class="mb-0 detail-list">
-                    <dt>Status atual</dt>
-                    <dd><span class="badge text-bg-secondary">{{ record.status }}</span></dd>
-                    <dt>Criado em</dt>
-                    <dd>{{ record.created_at.strftime('%d/%m/%Y %H:%M') }}</dd>
-                    <dt>Atualizado em</dt>
-                    <dd>{{ record.updated_at.strftime('%d/%m/%Y %H:%M') }}</dd>
-                </dl>
+    <div class="col-xl-4">
+        <div class="card glass-card border-0 shadow-xl mb-4">
+            <div class="card-body p-4">
+                <h2 class="h5 mb-3">Resumo operacional</h2>
+                <div class="stack-gap-sm text-secondary">
+                    <div class="summary-row"><span>Criado em</span><strong>{{ record.created_at.strftime('%d/%m/%Y %H:%M') }}</strong></div>
+                    <div class="summary-row"><span>Atualizado em</span><strong>{{ record.updated_at.strftime('%d/%m/%Y %H:%M') }}</strong></div>
+                    <div class="summary-row"><span>Status</span><strong>{{ record.status }}</strong></div>
+                </div>
             </div>
         </div>
 
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3">
-                <h2 class="h5 mb-0">Ações rápidas</h2>
-            </div>
-            <div class="card-body d-grid gap-2">
-                <a href="{{ url_for('main.edit_record', record_id=record.id) }}" class="btn btn-outline-primary">Editar registro</a>
-                <a href="{{ url_for('main.dispatch_record', record_id=record.id) }}" class="btn btn-outline-success">Registrar despacho</a>
-                <form method="post" action="{{ url_for('main.delete_record', record_id=record.id) }}">
-                    <button type="submit" class="btn btn-outline-danger w-100 btn-delete">Excluir registro</button>
-                </form>
+        <div class="card glass-card border-0 shadow-xl">
+            <div class="card-body p-4">
+                <h2 class="h5 mb-3">Ações</h2>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('main.edit_record', record_id=record.id) }}" class="btn btn-outline-light">Editar registro</a>
+                    <a href="{{ url_for('main.dispatch_record', record_id=record.id) }}" class="btn btn-primary">Registrar despacho</a>
+                    <form method="post" action="{{ url_for('main.delete_record', record_id=record.id) }}">
+                        <button type="submit" class="btn btn-outline-danger w-100 btn-delete">Excluir registro</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
