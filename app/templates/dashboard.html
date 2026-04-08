@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-4 gap-3">
+    <div>
+        <h1 class="h3 mb-1">Dashboard</h1>
+        <p class="text-secondary mb-0">Resumo geral dos equipamentos cadastrados.</p>
+    </div>
+    <a href="{{ url_for('main.create_record') }}" class="btn btn-primary">Novo recebimento</a>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card border-0 shadow-sm">
+            <div class="card-body">
+                <span class="small text-uppercase text-secondary">Total recebidos</span>
+                <div class="display-6 fw-bold mt-2">{{ stats.total }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card border-0 shadow-sm">
+            <div class="card-body">
+                <span class="small text-uppercase text-secondary">Em manutenção</span>
+                <div class="display-6 fw-bold mt-2">{{ stats.em_manutencao }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card border-0 shadow-sm">
+            <div class="card-body">
+                <span class="small text-uppercase text-secondary">Prontos</span>
+                <div class="display-6 fw-bold mt-2">{{ stats.pronto }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card border-0 shadow-sm">
+            <div class="card-body">
+                <span class="small text-uppercase text-secondary">Entregues</span>
+                <div class="display-6 fw-bold mt-2">{{ stats.entregue }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h2 class="h5 mb-0">Últimos registros</h2>
+        <a href="{{ url_for('main.records_list') }}" class="btn btn-sm btn-outline-primary">Ver todos</a>
+    </div>
+    <div class="card-body p-0">
+        {% if latest_records %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Código</th>
+                        <th>Responsável</th>
+                        <th>Patrimônio</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for record in latest_records %}
+                    <tr>
+                        <td>{{ record.reference_code }}</td>
+                        <td>{{ record.responsible_name }}</td>
+                        <td>{{ record.asset_tag }}</td>
+                        <td><span class="badge text-bg-secondary">{{ record.status }}</span></td>
+                        <td>{{ record.received_date.strftime('%d/%m/%Y') }}</td>
+                        <td class="text-end">
+                            <a href="{{ url_for('main.record_detail', record_id=record.id) }}" class="btn btn-sm btn-outline-dark">Detalhes</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-4 text-secondary">Nenhum equipamento cadastrado ainda.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

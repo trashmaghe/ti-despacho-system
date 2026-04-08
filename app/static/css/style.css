@@ -1,0 +1,43 @@
+:root {
+    --bg-soft: #f5f7fb;
+    --card-radius: 1rem;
+}
+
+body {
+    background: var(--bg-soft);
+}
+
+.card {
+    border-radius: var(--card-radius);
+}
+
+.stat-card {
+    min-height: 140px;
+}
+
+.min-vh-75 {
+    min-height: 75vh;
+}
+
+.detail-list dt {
+    color: #6c757d;
+    font-size: .875rem;
+    text-transform: uppercase;
+    margin-bottom: .2rem;
+}
+
+.detail-list dd {
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.table > :not(caption) > * > * {
+    padding-top: 0.9rem;
+    padding-bottom: 0.9rem;
+}
+
+.form-control,
+.form-select,
+.btn {
+    border-radius: .8rem;
+}

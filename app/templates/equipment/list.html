@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %}Equipamentos - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-4 gap-3">
+    <div>
+        <h1 class="h3 mb-1">Equipamentos</h1>
+        <p class="text-secondary mb-0">Consulte, filtre e gerencie os registros cadastrados.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('main.export_records', search=search, status=status) }}" class="btn btn-outline-success">Exportar CSV</a>
+        <a href="{{ url_for('main.create_record') }}" class="btn btn-primary">Novo recebimento</a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-6">
+                <label for="search" class="form-label">Buscar</label>
+                <input type="text" class="form-control" id="search" name="search" value="{{ search }}" placeholder="Nome, patrimônio, série, setor ou código">
+            </div>
+            <div class="col-md-4">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">Todos</option>
+                    {% for item in statuses %}
+                    <option value="{{ item }}" {% if status == item %}selected{% endif %}>{{ item }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-grid align-self-end">
+                <button class="btn btn-dark" type="submit">Filtrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        {% if records %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Código</th>
+                        <th>Responsável</th>
+                        <th>Setor</th>
+                        <th>Patrimônio</th>
+                        <th>Status</th>
+                        <th>Recebimento</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for record in records %}
+                    <tr>
+                        <td>{{ record.reference_code }}</td>
+                        <td>{{ record.responsible_name }}</td>
+                        <td>{{ record.department }}</td>
+                        <td>{{ record.asset_tag }}</td>
+                        <td><span class="badge text-bg-secondary">{{ record.status }}</span></td>
+                        <td>{{ record.received_date.strftime('%d/%m/%Y') }}</td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('main.record_detail', record_id=record.id) }}" class="btn btn-outline-dark">Ver</a>
+                                <a href="{{ url_for('main.edit_record', record_id=record.id) }}" class="btn btn-outline-primary">Editar</a>
+                                <a href="{{ url_for('main.dispatch_record', record_id=record.id) }}" class="btn btn-outline-success">Despacho</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-4 text-secondary">Nenhum registro encontrado para os filtros informados.</div>
+        {% endif %}
+    </div>
+</div>
+
+{% if pagination.pages > 1 %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if pagination.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('main.records_list', page=pagination.prev_num, search=search, status=status) }}">Anterior</a>
+        </li>
+        {% endif %}
+        {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+            <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('main.records_list', page=page_num, search=search, status=status) }}">{{ page_num }}</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+        {% if pagination.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('main.records_list', page=pagination.next_num, search=search, status=status) }}">Próxima</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Login - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-75">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-4 p-lg-5">
+                <div class="text-center mb-4">
+                    <h1 class="h3 fw-bold mb-2">{{ app_name }}</h1>
+                    <p class="text-secondary mb-0">Acesse o painel de recebimento e despacho.</p>
+                </div>
+                <form method="post" novalidate>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Usuário</label>
+                        <input type="text" class="form-control" id="username" name="username" required autofocus>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Senha</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <button class="btn btn-primary w-100" type="submit">Entrar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

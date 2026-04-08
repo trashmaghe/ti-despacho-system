@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Despacho - {{ record.reference_code }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Registrar despacho</h1>
+        <p class="text-secondary mb-0">Finalize a devolução do equipamento {{ record.reference_code }}.</p>
+    </div>
+    <a href="{{ url_for('main.record_detail', record_id=record.id) }}" class="btn btn-outline-secondary">Voltar</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <form method="post" class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label" for="dispatched_date">Data de saída</label>
+                <input class="form-control" type="date" id="dispatched_date" name="dispatched_date" value="{{ record.dispatched_date.strftime('%Y-%m-%d') if record.dispatched_date else '' }}" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="final_status">Status final</label>
+                <select class="form-select" id="final_status" name="final_status" required>
+                    <option value="Pronto para devolução" {% if record.status == 'Pronto para devolução' %}selected{% endif %}>Pronto para devolução</option>
+                    <option value="Entregue" {% if record.status == 'Entregue' %}selected{% endif %}>Entregue</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="withdrawn_by">Quem retirou</label>
+                <input class="form-control" type="text" id="withdrawn_by" name="withdrawn_by" value="{{ record.withdrawn_by or '' }}" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="delivered_by">Técnico responsável pela entrega</label>
+                <input class="form-control" type="text" id="delivered_by" name="delivered_by" value="{{ record.delivered_by or '' }}" required>
+            </div>
+            <div class="col-12">
+                <label class="form-label" for="dispatch_notes">Observações de saída</label>
+                <textarea class="form-control" id="dispatch_notes" name="dispatch_notes" rows="4">{{ record.dispatch_notes or '' }}</textarea>
+            </div>
+            <div class="col-12 d-flex justify-content-end gap-2">
+                <a href="{{ url_for('main.record_detail', record_id=record.id) }}" class="btn btn-outline-secondary">Cancelar</a>
+                <button class="btn btn-success" type="submit">Salvar despacho</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
